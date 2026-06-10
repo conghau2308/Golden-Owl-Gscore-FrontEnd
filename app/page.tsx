@@ -1,65 +1,140 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import { useState } from 'react';
+import { getStudentScore } from '@/lib/api';
+import type { StudentScore } from '@/types';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Search, AlertCircle } from 'lucide-react';
+
+const SUBJECTS: { key: keyof StudentScore; label: string }[] = [
+  { key: 'math', label: 'Toán' },
+  { key: 'literature', label: 'Ngữ Văn' },
+  { key: 'english', label: 'Ngoại Ngữ' },
+  { key: 'physics', label: 'Vật Lý' },
+  { key: 'chemistry', label: 'Hóa Học' },
+  { key: 'biology', label: 'Sinh Học' },
+  { key: 'history', label: 'Lịch Sử' },
+  { key: 'geography', label: 'Địa Lý' },
+  { key: 'civicEdu', label: 'GDCD' },
+];
+
+const GROUPS = [
+  { name: 'Khối A', keys: ['math', 'physics', 'chemistry'] },
+  { name: 'Khối B', keys: ['math', 'biology', 'chemistry'] },
+  { name: 'Khối C', keys: ['literature', 'history', 'geography'] },
+  { name: 'Khối D', keys: ['math', 'literature', 'english'] },
+];
+
+function ScoreBadge({ score }: { score: number | null }) {
+  if (score === null) return <Badge variant="outline">—</Badge>;
+  if (score >= 8) return <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white">{score}</Badge>;
+  if (score >= 6.5) return <Badge className="bg-blue-500 hover:bg-blue-600 text-white">{score}</Badge>;
+  if (score >= 5) return <Badge className="bg-amber-500 hover:bg-amber-600 text-white">{score}</Badge>;
+  return <Badge variant="destructive">{score}</Badge>;
+}
+
+export default function LookupPage() {
+  const [input, setInput] = useState('');
+  const [data, setData] = useState<StudentScore | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSearch = async () => {
+    if (!input.trim()) return;
+    setLoading(true); setError(null);
+    try {
+      setData(await getStudentScore(input.trim()));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Không tìm thấy thí sinh');
+      setData(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold">Tra cứu điểm thi</h1>
+        <p className="text-muted-foreground text-sm mt-1">Nhập số báo danh để xem kết quả</p>
+      </div>
+
+      <div className="flex gap-2">
+        <Input
+          placeholder="Số báo danh (VD: 01000005)"
+          value={input}
+          onChange={e => setInput(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && handleSearch()}
+          className="font-mono"
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+        <Button onClick={handleSearch} disabled={loading}>
+          <Search className="w-4 h-4 mr-2" />
+          Tra cứu
+        </Button>
+      </div>
+
+      {error && (
+        <div className="flex items-center gap-2 text-destructive text-sm">
+          <AlertCircle className="w-4 h-4" /> {error}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      )}
+
+      {loading && (
+        <Card><CardContent className="pt-6 space-y-3">
+          {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-8 w-full" />)}
+        </CardContent></Card>
+      )}
+
+      {data && !loading && (
+        <>
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center justify-between text-base">
+                <span>SBD: <span className="font-mono">{data.registrationNumber}</span></span>
+                {data.referenceLanguageCode && (
+                  <Badge variant="outline">Mã ngoại ngữ: {data.referenceLanguageCode}</Badge>
+                )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {SUBJECTS.map(({ key, label }) => (
+                  <div key={key} className="flex items-center justify-between p-2 rounded-lg bg-muted/50">
+                    <span className="text-sm">{label}</span>
+                    <ScoreBadge score={data[key] as number | null} />
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">Điểm tổ hợp xét tuyển</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 gap-3">
+                {GROUPS.map(({ name, keys }) => {
+                  const vals = keys.map(k => data[k as keyof StudentScore] as number | null);
+                  const total = vals.some(v => v === null) ? null : vals.reduce((a, b) => a! + b!, 0);
+                  return (
+                    <div key={name} className="p-3 rounded-lg border text-center">
+                      <div className="text-xs text-muted-foreground mb-1">{name}</div>
+                      <div className="text-2xl font-bold text-primary">
+                        {total !== null ? total!.toFixed(2) : '—'}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        </>
+      )}
     </div>
   );
 }
