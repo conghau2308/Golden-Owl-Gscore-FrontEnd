@@ -2,6 +2,8 @@ import { getScoreStatistics } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import StatisticsChart from '@/components/StatisticsChart';
 
+export const dynamic = 'force-dynamic';
+
 export default async function StatisticsPage() {
     const stats = await getScoreStatistics();
 

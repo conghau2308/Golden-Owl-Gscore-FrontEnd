@@ -9,6 +9,8 @@ const RANK_COLOR: Record<number, string> = {
     3: 'text-amber-600',
 };
 
+export const dynamic = 'force-dynamic';
+
 export default async function Top10Page() {
     const top10 = await getTop10GroupA();
 
