@@ -4,7 +4,7 @@
 
 🔗 **Demo**: https://golden-owl-gscore-front-end.vercel.app/
 
-📦 **Backend repo & tài liệu đầy đủ**: [golden-owl-backend](https://github.com/YOUR_USERNAME/golden-owl-backend)
+📦 **Backend repo & tài liệu đầy đủ**: [golden-owl-backend](https://github.com/flyingbookstore999-arch/Golden-Owl-Backend-Test.git)
 
 ---
 
@@ -31,8 +31,8 @@
 
 ```bash
 # 1. Clone
-git clone https://github.com/YOUR_USERNAME/golden-owl-frontend.git
-cd golden-owl-frontend
+git clone https://github.com/conghau2308/Golden-Owl-Gscore-FrontEnd.git
+cd Golden-Owl-Gscore-FrontEnd
 
 # 2. Cài dependencies
 npm install
