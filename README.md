@@ -10,7 +10,7 @@
 
 ## 🎬 Demo
 
-[![Demo Video](https://img.youtube.com/vi/mVM86bKW_xc/maxresdefault.jpg)](https://youtu.be/mVM86bKW_xc)
+![Demo](assets/demo.gif)
 
 ---
 
